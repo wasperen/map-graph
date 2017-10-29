@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <style type="text/css">
+
+            .link line {
+              stroke: #999;
+              stroke-opacity: 0.6;
+            }
+
+            .labels text {
+              pointer-events: none;
+              font: 10px sans-serif;
+            }
+
+    </style>
+    </head>
+    <body>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="d3-ellipse-force.js"></script>
+        <script src="http://underscorejs.org/underscore-min.js"></script>
+        
+<script type="text/javascript">
+
+var w = 1800,
+    h = 900,
+    border = 10;
+var wBorder = w - border,
+    hBorder = h - border;
+var link, node, text;
+
+
+var nodeColor = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }))
+    .force("collide", d3.ellipseForce(6, 0.0, 1))
+    .force("center", d3.forceCenter(w / 2, h / 2));
+
+var vis = d3.select("body").append("svg")
+    // .attr("xmlns", "http://www.w3.org/2000/svg")
+    // .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
+    .attr("width", w)
+    .attr("height", h);
+
+d3.tsv("map-data.tsv", function(data) {
+    c1 = _.map(data, function(d) {
+            return {
+                id: d.from.toLowerCase().trim(),
+                name: d.from,
+                color: d.color
+            }
+        });
+    c2 = _.map(data, function(d) {
+            return {
+                id: d.to.toLowerCase().trim(),
+                name: d.to,
+                color: d.color
+            }
+        });
+    nodes = _.uniq(_.union(c1, c2), false, function(d) { return d.id; });
+    nodes = _.filter(nodes, function(d) { return d.id != 'base'; });
+    nodes = _.map(nodes, function(d) { 
+        d.rx = d.name.length * 4.5;
+        d.ry = 12;
+        return d;
+    });
+    console.log(nodes);
+    links = _.chain(data)
+        .map(function(d) {
+            f = d.from.toLowerCase().trim();
+            t = d.to.toLowerCase().trim();
+            if (f != 'base' & t != 'base') {
+                return {
+                    id: f + '/' + t,
+                    source: _.find(nodes, function(d) { return d.id == f; }),
+                    target: _.find(nodes, function(d) { return d.id == t; })
+                }
+            }
+        })
+        .filter(function(d) { return d != undefined; })
+        .value();
+    console.log(links);
+
+    link = vis.append("g")
+        .attr("class", "link")
+        .selectAll("line")
+        .data(links, function(d) { return d.id; })
+        .enter().append("line")
+        .style("stroke", function(d) { return "black"; }); //linkColor(d.color); });
+
+    link.exit().remove();
+
+    node = vis.append("g")
+        .attr("class", "node")
+        .selectAll("ellipse")
+        .data(nodes, function(d) { return d.id; })
+        .enter().append("ellipse")
+        .attr("rx", function(d) { return d.rx; })
+        .attr("ry", function(d) { return d.ry; })
+        .attr("fill", function(d) { console.log(d.color); return nodeColor(d.color); })
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+    node.exit().remove();
+
+    text = vis.append("g")
+        .classed("labels", true)
+        .selectAll("text")
+        .data(nodes, function(d) { return d.id; })
+        .enter().append("text")  
+        .attr("dy", 2)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return d.name; })
+        .attr("fill", "white");
+
+    simulation.nodes(nodes).on("tick", ticked);
+    simulation.force("link").links(links);
+});
+
+function ticked() {
+  link
+      .attr("x1", function(d) { return Math.max(border, Math.min(wBorder, d.source.x)); })
+      .attr("y1", function(d) { return Math.max(border, Math.min(hBorder, d.source.y)); })
+      .attr("x2", function(d) { return Math.max(border, Math.min(wBorder, d.target.x)); })
+      .attr("y2", function(d) { return Math.max(border, Math.min(hBorder, d.target.y)); });
+
+  node
+      .attr("cx", function(d) { return Math.max(border, Math.min(wBorder, d.x)); })
+      .attr("cy", function(d) { return Math.max(border, Math.min(hBorder, d.y)); });
+  text
+      .attr("x", function(d) { return Math.max(border, Math.min(wBorder, d.x)); })
+      .attr("y", function(d) { return Math.max(border, Math.min(hBorder, d.y)); });
+
+}
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+</script>
+    </body>
+</html>

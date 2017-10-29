@@ -1,0 +1,133 @@
+data wrangling	base	type conversion	1
+data wrangling	type conversion	data cleansing	1
+data wrangling	data cleansing	aggregation	1
+data wrangling	aggregation	set operations	1
+data wrangling	set operations	rotation	1
+data wrangling	rotation	normalization	1
+data wrangling	normalization	feature extraction	1
+data wrangling	feature extraction	sampling techniques	1
+data wrangling	sampling techniques	hashing	1
+data wrangling	hashing	encryption	1
+data structure	base	structured / tabular data 	2
+data structure	structured / tabular data	document based / NoSQL structure	2
+data structure	document based / NoSQL structure	key-value based	2
+data structure	key-value based	non-structured (text)	2
+data structure	non-structured (text)	non-structured (media)	2
+data structure	non-structured (media)	graph database	2
+data structure	graph database	search optimized	2
+data platforms	structured / tabular data	MS SQL Server	3
+data platforms	MS SQL Server	Oracle	3
+data platforms	Oracle	PostgreSQL	3
+data platforms	PostgreSQL	MySQL	3
+data platforms	MySQL	Hadoop Hive	3
+data platforms	Hadoop Hive	Impala	3
+data platforms	Impala	SAP HANA	3
+data platforms	SAP HANA	Terradata	3
+data platforms	Terradata	Apache Drill	3
+NoSQL	document based / NoSQL structure	MongoDB	4
+NoSQL	MongoDB	CouchDB	4
+Key-Value	key-value based	Cassandra	5
+Key-Value	Cassandra	Hbase	5
+graph	graph database	Titan	6
+graph	Titan	Neo4j	6
+search	search optimized	Solr	7
+search	Solr	Elasticsearch	7
+search	Elasticsearch	Splunk	7
+supervised ml	base	feature weighting & selection	8
+supervised ml	feature weighting & selection	lazy modelling	8
+supervised ml	lazy modelling	function fitting	8
+supervised ml	function fitting	linear / polynomial regression	8
+supervised ml	linear / polynomial regression	logistic regression	8
+supervised ml	logistic regression	dimensional reduction (pca, svd, etc)	8
+supervised ml	dimensional reduction (pca, svd, etc)	Bayesian modelling	8
+supervised ml	Bayesian modelling	tree induction	8
+supervised ml	tree induction	association rule induction	8
+supervised ml	association rule induction	neural networks	8
+supervised ml	neural networks	convolutional neural networks (deep learning)	8
+supervised ml	convolutional neural networks (deep learning)	support vector machines	8
+supervised ml	support vector machines	time series analysis	8
+supervised ml	time series analysis	frequency domain analysis	8
+supervised ml	frequency domain analysis	discriminant analysis	8
+unsupervised ml	base	clustering & segmentation	9
+unsupervised ml	clustering & segmentation	nearest neighbour	9
+unsupervised ml	nearest neighbour	association & item set mining	9
+unsupervised ml	association & item set mining	correlation & dependency computation	9
+unsupervised ml	correlation & dependency computation	similarity computation	9
+unsupervised ml	similarity computation	reinforcement learning	9
+theory	base	optimization	10
+theory	optimization	discrete event simulation	10
+theory	discrete event simulation	agent based simulation	10
+theory	agent based simulation	system dynamics	10
+theory	system dynamics	probability theory	10
+theory	probability theory	game theory	10
+theory	game theory	statistics	10
+theory	statistics	cryptography	10
+theory	cryptography	control theory	10
+theory	control theory	fluid dynamics	10
+artificial intelligence	base	natural language processing	11
+artificial intelligence	natural language processing	speech processing	11
+artificial intelligence	speech processing	automated reasoning (cognitive computing)	11
+artificial intelligence	automated reasoning (cognitive computing)	rule based decision processing	11
+artificial intelligence	rule based decision processing	planning and scheduling	11
+artificial intelligence	planning and scheduling	knowledge representation 	11
+artificial intelligence	knowledge representation 	image and video processing	11
+artificial intelligence	image and video processing	robotics	11
+operationalization	reinforcement learning	model performance measurement	12
+operationalization	discriminant analysis	model performance measurement	12
+operationalization	model performance measurement	model validation	12
+operationalization	model validation	software design	12
+operationalization	software design	model application	12
+operationalization	model application	continuous deployment	12
+operationalization	continuous deployment	version control	12
+operationalization	version control	unit testing	12
+platform	base	solutions architecture	13
+platform	solutions architecture	virtualization	13
+platform	virtualization	cloud	13
+platform	cloud	big data platform	13
+platform	big data platform	RDBMS platform	13
+platform	RDBMS platform	in-memory platform	13
+platform	in-memory platform	GPU / High Performance platform	13
+platform	GPU / High Performance platform	time series platform	13
+platform	time series platform	OS / system setup & maintenance	13
+visualization	rotation	report implementation	14
+visualization	report implementation	user experience development	14
+visualization	user experience development	dashboard implementation	14
+visualization	dashboard implementation	bespoke vizualization	14
+vizualization tools	dashboard implementation	Qlikview	15
+vizualization tools	Qlikview	QlikSense	15
+vizualization tools	QlikSense	Tableau	15
+vizualization tools	Tableau	Superscript	15
+vizualization tools	Superscript	Kibana	15
+vizualization tools	Kibana	D3.js	15
+vizualization tools	D3.js	R Shiny	15
+platforms	base	Linux	16
+platforms	Linux	Ambari	16
+platforms	Ambari	Cloudera Manager	16
+platforms	Cloudera Manager	Docker	16
+platforms	Docker	Mesos	16
+platforms	Mesos	Knox	16
+platforms	Knox	Node.js	16
+platforms	Node.js	Oozie	16
+platforms	Oozie	Airflow	16
+platforms	Airflow	Tez	16
+cloud	base	cloud	17
+cloud	cloud	Amazon RDS	17
+cloud	Amazon RDS	Amazon Redshift	17
+cloud	Amazon Redshift	Google Big Query	17
+cloud	Google Big Query	Azure HDInsight	17
+tools of the trade	base	Alteryx	18
+tools of the trade	Alteryx	Knime	18
+tools of the trade	Knime	RapidMiner	18
+tools of the trade	RapidMiner	SAS Enterprize Miner	18
+tools of the trade	SAS Enterprize Miner	SPSS	18
+tools of the trade	SPSS	R	18
+tools of the trade	R	python	18
+tools of the trade	python	pyspark	18
+tools of the trade	pyspark	perl	18
+tools of the trade	perl	SAS	18
+data in motion	base	Flume	19
+data in motion	Flume	Informatica ETL	19
+data in motion	Informatica ETL	Talend	19
+data in motion	Talend	Apache Storm	19
+data in motion	Apache Storm	Kafka	19
+data in motion	Kafka	Nifi	19

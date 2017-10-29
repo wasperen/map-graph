@@ -1,0 +1,26 @@
+data wrangling	base	type conversion	1
+data wrangling	type conversion	data cleansing	1
+data wrangling	data cleansing	aggregation	1
+data wrangling	aggregation	set operations	1
+data wrangling	set operations	rotation	1
+data wrangling	rotation	normalization	1
+data wrangling	normalization	feature extraction	1
+data wrangling	feature extraction	sampling techniques	1
+data wrangling	sampling techniques	hashing	1
+data wrangling	hashing	encryption	1
+data structure	base	structured / tabular data 	2
+data structure	structured / tabular data	document based / NoSQL structure	2
+data structure	document based / NoSQL structure	key-value based	2
+data structure	key-value based	non-structured (text)	2
+data structure	non-structured (text)	non-structured (media)	2
+data structure	non-structured (media)	graph database	2
+data structure	graph database	search optimized	2
+data platforms	structured / tabular data	MS SQL Server	3
+data platforms	MS SQL Server	Oracle	3
+data platforms	Oracle	PostgreSQL	3
+data platforms	PostgreSQL	MySQL	3
+data platforms	MySQL	Hadoop Hive	3
+data platforms	Hadoop Hive	Impala	3
+data platforms	Impala	SAP HANA	3
+data platforms	SAP HANA	Terradata	3
+data platforms	Terradata	Apache Drill	3
