@@ -14,10 +14,10 @@ works from the following principle:
 2. find the "starting nodes" (the ones that have no predecessor)
 3. place the starting nodes on the grid
 4. for each edge of the non-starter kind
-  a. find the possible placings, close to the node that precedes it in the graph
-  b. if we can place it at the first placing, go for it and try to place the remainder
-  c. if the remainder fails, try the next possible placing
-  d. if all possible placings fail, fail to place this node
+  1. find the possible placings, close to the node that precedes it in the graph
+  2. if we can place it at the first placing, go for it and try to place the remainder
+  3. if the remainder fails, try the next possible placing
+  4. if all possible placings fail, fail to place this node
 5. if we placed all nodes, print out the placements, else "No Placements"
 
 This should basically try out all possible layouts untill it finds a suitable one.
