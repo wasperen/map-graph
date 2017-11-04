@@ -31,12 +31,6 @@ neighbours point@(Point xx yy) = map (\(Point dx dy) -> Point (xx + dx) (yy + dy
 		start = startPoint point
 		directed = (if xx >= 0 then id else reverse) $ clockwize start
 
--- neighbours :: Point -> Points
--- neighbours (Point x y) = [Point (x + xx) (y + yy) | 
--- 	xx <- [(-1)..1],
--- 	yy <- [(-1)..1], 
--- 	not (xx == 0 && yy == 0)]
-
 isOccupied :: Placements -> Point -> Bool
 isOccupied placements point = any (\(Placement placedPoint _) -> placedPoint == point) placements
 
@@ -54,27 +48,41 @@ place placements _ [] = (True, placements)
 place placements [] _ = (False, placements)
 place placements (point:points) edges@(Edge fNode tNode:graph)
 	| isOccupied placements point = (False, placements)
-	| otherwise = if nextOk then (True, nextPlacements) else place placements points edges
+	| otherwise = if nextOk then (True, nextPlacements) else trace ("backtracking to place " ++ tNode) place placements points edges
+	-- | otherwise = if nextOk then (True, nextPlacements) else place placements points edges
 	where
 		newPlacements = (Placement point tNode):placements
 		newPoints = generatePoints newPlacements graph
-		(nextOk, nextPlacements) = trace ("place " ++ (show $ length newPlacements) ++ " " ++ (show newPoints)) place newPlacements newPoints graph
+		remainder = filter (\(Edge f t) -> t /= tNode) graph
+		(nextOk, nextPlacements) = trace ("placed " ++ tNode ++ " at " ++ (show point) ++ ", now placed " ++ (show $ length newPlacements) ++ " and trying " ++ (show $ length newPoints)) place newPlacements newPoints remainder
+		-- (nextOk, nextPlacements) = place newPlacements newPoints remainder
 
 pointMult :: Int -> Point -> Point
 pointMult f (Point x y) = Point (f * x) (f * y)
 
 startPoints :: Points
 startPoints = 
-	let c = cycle $ neighbours (Point 0 0)
-	in zipWith pointMult [1..] c
+	let	c = cycle $ neighbours (Point 0 0)
+		n = (take 8 $ repeat 4) ++ map (+6) n
+	in zipWith pointMult n c
+
+orderEdges :: [Node] -> Graph -> Graph
+orderEdges [] graph = graph
+orderEdges (node:nodes) graph =
+	let	(outEdges, otherEdges) = partition (\(Edge fNode tNode) -> node == fNode) graph
+		forwardNodes = map (\(Edge _ tNode) -> tNode) outEdges
+		forwardEdges = orderEdges (forwardNodes ++ nodes) otherEdges
+	in outEdges ++ forwardEdges
 
 doPlace :: Graph -> Maybe Placements
 doPlace graph = 
 	let	hasPred (Edge fNode tNode) = any (\(Edge _ t) -> t == fNode) graph
 		(midEdges, startEdges) = partition hasPred graph
 		startNodes = nub $ map (\(Edge node _) -> node) startEdges
-		initPlacements = zipWith (\point node -> Placement point node) (neighbours (Point 0 0)) startNodes
-		(done, placements) = place initPlacements (generatePoints initPlacements graph) graph
+		initPlacements = zipWith (\point node -> Placement point node) startPoints startNodes
+		orderedEdges = orderEdges startNodes graph
+		-- _ = trace("orderedEdges = " ++ (show orderedEdges)) True
+		(done, placements) = place initPlacements (generatePoints initPlacements orderedEdges) orderedEdges
 	in if done then Just placements else Nothing
 
 parseEdge :: String -> Edge
@@ -84,8 +92,8 @@ parseEdge line =
 
 unparsePlacements :: Maybe Placements -> String
 unparsePlacements Nothing = "No placements"
-unparsePlacements (Just placements) = unlines $ map (\(Placement (Point x y) node) -> ("[" ++ node ++ " (" ++ (show x) ++ ", " ++ (show y) ++ ")]")) placements
---unparsePlacements (Just placements) = foldr (\placement acc -> (show placement) ++ "," ++ acc) "" placements
+-- unparsePlacements (Just placements) = unlines $ map (\(Placement (Point x y) node) -> ("[" ++ node ++ " (" ++ (show x) ++ ", " ++ (show y) ++ ")]")) placements
+unparsePlacements (Just placements) = unlines $ map (\(Placement (Point x y) node) -> (node ++ "\t" ++ (show x) ++ "\t" ++ (show y))) placements
 
 process :: String -> String
 process lns =
