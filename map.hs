@@ -4,7 +4,7 @@ import Data.List.Split
 import Debug.Trace
 
 data Point = Point Int Int deriving (Show, Eq)
-type Node = String
+data Node = Node String String deriving (Show, Eq)
 data Edge = Edge Node Node deriving (Show, Eq)
 data Placement = Placement Point Node deriving (Show, Eq)
 type Points = [Point]
@@ -48,7 +48,7 @@ pointMult f (Point x y) = Point (f * x) (f * y)
 startPoints :: Points
 startPoints = 
 	let	c = cycle $ neighbours (Point 0 0)
-		n = (take 8 $ repeat 4) ++ map (+6) n
+		n = (take 8 $ repeat 1) ++ map (+3) n
 	in zipWith pointMult n c
 
 orderEdges :: [Node] -> Graph -> Graph
@@ -85,18 +85,22 @@ doPlace graph =
 parseEdge :: String -> Edge
 parseEdge line =
 	let	fields = splitOn "\t" line
-	in Edge (fields!!1) (fields!!2)
+		fNode = Node (fields!!1) (fields!!3)
+		tNode = Node (fields!!2) (fields!!3)
+	in Edge fNode tNode
 
 unparsePlacements :: [Placements] -> String
 unparsePlacements [] = "No placements"
 unparsePlacements ([]:placementss) = unparsePlacements placementss
-unparsePlacements (placements:_) = "nodeName\txPos\tyPos\n" ++ (unlines $ map (\(Placement (Point x y) node) -> (node ++ "\t" ++ (show x) ++ "\t" ++ (show y))) placements)
+unparsePlacements (placements:_) = 
+	let printLine (Placement (Point x y) (Node name color)) = name ++ "\t" ++ color ++ "\t" ++ (show x) ++ "\t" ++ (show y)
+	in "nodeName\tcolor\txPos\tyPos\n" ++ (unlines $ map printLine placements)
 
 process :: String -> String
 process lns =
 	let	rows = lines lns
 		allEdges = map parseEdge rows
-		edges = filter (\(Edge fNode tNode) -> fNode /= "base" && tNode /= "base") allEdges
+		edges = filter (\(Edge (Node fNode _) (Node tNode _)) -> fNode /= "base" && tNode /= "base") allEdges
 		placements = doPlace edges
 	in unparsePlacements placements
 
