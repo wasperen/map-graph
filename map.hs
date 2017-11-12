@@ -2,6 +2,7 @@ import System.IO
 import Data.List
 import Data.List.Split
 import Debug.Trace
+import Data.Maybe
 
 data Point = Point Int Int deriving (Show, Eq)
 data Node = Node String String deriving (Show, Eq)
@@ -96,13 +97,22 @@ unparsePlacements (placements:_) =
 	let printLine (Placement (Point x y) (Node name color)) = name ++ "\t" ++ color ++ "\t" ++ (show x) ++ "\t" ++ (show y)
 	in "nodeName\tcolor\txPos\tyPos\n" ++ (unlines $ map printLine placements)
 
+unparsePlacedGraph :: Graph -> [Placements] -> String
+unparsePlacedGraph _ [] = "No placements"
+unparsePlacedGraph graph ([]:placementss) = unparsePlacedGraph graph placementss
+unparsePlacedGraph graph (placements:_) =
+	let	findPlacement node = fromJust $ find (\(Placement _ n) ->  n == node) placements
+		printLine (Placement (Point fX fY) (Node fNode fColor)) (Placement (Point tX tY) (Node tNode tColor)) = intercalate "\t" [fNode, fColor, (show fX), (show fY), tNode, tColor, (show tX), (show tY)]
+		printEdge edge@(Edge fNode tNode) = printLine (findPlacement fNode) (findPlacement tNode)
+	in (intercalate "\t" ["fNodeName","fColor","fX","fY","tNodeName","tColor","tX","tY"]) ++ "\n" ++ (unlines $ map printEdge graph)
+
 process :: String -> String
 process lns =
 	let	rows = lines lns
 		allEdges = map parseEdge rows
 		edges = filter (\(Edge (Node fNode _) (Node tNode _)) -> fNode /= "base" && tNode /= "base") allEdges
-		placements = doPlace edges
-	in unparsePlacements placements
+		placementss = doPlace edges
+	in unparsePlacedGraph edges placementss
 
 --main = interact process
 main = do

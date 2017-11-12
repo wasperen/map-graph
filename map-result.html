@@ -27,13 +27,13 @@
         
 <script type="text/javascript">
 
-var w = 4000,
+var w = 6000,
     h = 1000,
     border = 5;
 var wBorder = w - border,
     hBorder = h - border;
 
-var boxWidth = 200,
+var boxWidth = 150,
     boxHeight = 30,
     nrH = Math.floor((w - 2 * border) / boxWidth) - 2,
     nrV = Math.floor((h - 2 * border) / boxHeight) - 2;
@@ -42,7 +42,7 @@ console.log([nrH, nrV]);
 var midH = Math.floor(nrH / 2),
     midV = Math.floor(nrV / 2);
 
-// var nodeColor = d3.scaleOrdinal(d3.schemeCategory20);
+ var nodeColor = d3.scale.category20();
 
 var vis = d3.select("body").append("svg")
     // .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -52,36 +52,70 @@ var vis = d3.select("body").append("svg")
 
 d3.tsv("map.tsv", function(data) {
   console.log(data);
-  minX = _.chain(data).map(function(d) { return +d.xPos; }).min().value();
-  maxX = _.chain(data).map(function(d) { return +d.xPos; }).max().value();
-  minY = _.chain(data).map(function(d) { return +d.yPos; }).min().value();
-  maxY = _.chain(data).map(function(d) { return +d.yPos; }).max().value();
+
+  var nodes = _.chain(data)
+    .map(function(d) { 
+      return [
+        {id: d.fNodeName, name: d.fNodeName, color: d.fColor, xPos: d.fX, yPos: d.fY},
+        {id: d.tNodeName, name: d.tNodeName, color: d.tColor, xPos: d.tX, yPos: d.tY}
+      ]; 
+    })
+    .flatten()
+    .uniq(false, function(d) { return d.name; })
+    .value()
+  console.log(nodes);
+
+  var links = _.map(data, function(d) {
+      var fNode = _.find(nodes, function(n) { return d.fNodeName == n.id; });
+      var tNode = _.find(nodes, function(n) { return d.tNodeName == n.id; });
+      return {
+        id: d.fNodeName + "/" + d.tNodeName,
+        source: fNode,
+        target: tNode
+      };
+    });
+  console.log(links);
+
+  minX = _.chain(nodes).map(function(d) { return +d.xPos; }).min().value();
+  maxX = _.chain(nodes).map(function(d) { return +d.xPos; }).max().value();
+  minY = _.chain(nodes).map(function(d) { return +d.yPos; }).min().value();
+  maxY = _.chain(nodes).map(function(d) { return +d.yPos; }).max().value();
 
   scaleX = d3.scale.linear().domain([minX,maxX]).range([border + boxWidth / 2, w - border - boxWidth / 2]);
   scaleY = d3.scale.linear().domain([minY,maxY]).range([border + boxHeight / 2, h - border - boxHeight / 2]);
 
+  var link = vis.append('g')
+    .attr("class", "links")
+    .selectAll('line')
+    .data(links, function(l) { return l.id; })
+    .enter().append('line')
+    .style("stroke", function(d) { return nodeColor(d.source.color); })
+    .attr("x1", function(d) { return scaleX(d.source.xPos); })
+    .attr("y1", function(d) { return scaleY(d.source.yPos); })
+    .attr("x2", function(d) { return scaleX(d.target.xPos); })
+    .attr("y2", function(d) { return scaleY(d.target.yPos); });
+
   var node = vis.append('g')
     .attr("class", "nodes")
     .selectAll('rect')
-    .data(data, function(n) { return n.nodeName; })
+    .data(nodes, function(n) { return n.id; })
     .enter().append('rect')
-    // .attr('fill', function(d) { return nodeColor(d.color); })
+    .attr('fill', function(d) { return nodeColor(d.color); })
     .attr('x', function(d) { return scaleX(d.xPos) - boxWidth / 2; })
     .attr('y', function(d) { return scaleY(d.yPos) - boxHeight / 2; })
     .attr('width', function(d) { return boxWidth; })
     .attr('height', function(d) { return boxHeight; })
     .attr('rx', "5")
     .attr('ry', "5");
-  // node.exit().remove();
 
   var label = vis.append('g')
     .attr("class", "labels")
     .selectAll('text')
-    .data(data, function(d) { return d.nodeName; })
+    .data(nodes, function(d) { return d.id; })
     .enter().append('text')
     .attr("dy", 2)
     .attr("text-anchor", "middle")
-    .text(function(d) { return d.nodeName; })
+    .text(function(d) { return d.name; })
     .attr("fill", "white")
     .attr("x", function(d) { return scaleX(d.xPos); })
     .attr("y", function(d) { return scaleY(d.yPos); });
