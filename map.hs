@@ -34,28 +34,13 @@ neighbours point@(Point xx yy) = map (\(Point dx dy) -> Point (xx + dx) (yy + dy
 isOccupied :: Placements -> Point -> Bool
 isOccupied placements point = any (\(Placement placedPoint _) -> placedPoint == point) placements
 
-isPlaced :: Placements -> Node -> Bool
-isPlaced placements node = any (\(Placement _ placedNode) -> placedNode == node) placements
+isGoodPlacement :: Graph -> Placements -> Placement -> Bool
+isGoodPlacement graph placements (Placement point node) = not $ isOccupied placements point
 
-generatePoints :: Placements -> Graph -> Points
-generatePoints _ [] = []
+generatePoints :: Placements -> Edge -> Points
 generatePoints [] _ = []
-generatePoints ((Placement point node):ps) edges@(Edge fNode tNode:graph) =
-	(if node == fNode then neighbours point else []) ++ generatePoints ps edges
-
-place :: Placements -> Points -> Graph -> (Bool, Placements)
-place placements _ [] = (True, placements)
-place placements [] _ = (False, placements)
-place placements (point:points) edges@(Edge fNode tNode:graph)
-	| isOccupied placements point = (False, placements)
-	| otherwise = if nextOk then (True, nextPlacements) else trace ("backtracking to place " ++ tNode) place placements points edges
-	-- | otherwise = if nextOk then (True, nextPlacements) else place placements points edges
-	where
-		newPlacements = (Placement point tNode):placements
-		newPoints = generatePoints newPlacements graph
-		remainder = filter (\(Edge f t) -> t /= tNode) graph
-		(nextOk, nextPlacements) = trace ("placed " ++ tNode ++ " at " ++ (show point) ++ ", now placed " ++ (show $ length newPlacements) ++ " and trying " ++ (show $ length newPoints)) place newPlacements newPoints remainder
-		-- (nextOk, nextPlacements) = place newPlacements newPoints remainder
+generatePoints ((Placement point node):ps) edge@(Edge fNode tNode) =
+	(if node == fNode then neighbours point else []) ++ generatePoints ps edge
 
 pointMult :: Int -> Point -> Point
 pointMult f (Point x y) = Point (f * x) (f * y)
@@ -74,26 +59,38 @@ orderEdges (node:nodes) graph =
 		forwardEdges = orderEdges (forwardNodes ++ nodes) otherEdges
 	in outEdges ++ forwardEdges
 
-doPlace :: Graph -> Maybe Placements
+placeNode :: Graph -> Placements -> Node -> Points -> [Placements]
+placeNode graph placements node points = [placement:placements | placement <- [(Placement point node) | point <- points], isGoodPlacement graph placements placement]
+
+placeInitialNodes :: [Node] -> Points -> [Placements]
+placeInitialNodes nodes points = [zipWith (\node point -> Placement point node) n points | n <- permutations nodes]
+
+place :: Graph -> [Placements] -> [Edge] -> [Placements]
+place _ placementss [] = placementss
+place _ [] _ = []
+place graph (placements:placementss) (edge@(Edge fNode tNode):edges) =
+	let	points = generatePoints placements edge
+		newPlacementss = placeNode graph placements tNode points
+	in place graph newPlacementss edges ++ place graph placementss (edge:edges)
+
+doPlace :: Graph -> [Placements]
 doPlace graph = 
-	let	hasPred (Edge fNode tNode) = any (\(Edge _ t) -> t == fNode) graph
-		(midEdges, startEdges) = partition hasPred graph
+	let	hasNoPred (Edge fNode tNode) = not $ any (\(Edge _ t) -> t == fNode) graph
+		startEdges = filter hasNoPred graph
 		startNodes = nub $ map (\(Edge node _) -> node) startEdges
-		initPlacements = zipWith (\point node -> Placement point node) startPoints startNodes
+		initPlacementss = placeInitialNodes startNodes startPoints
 		orderedEdges = orderEdges startNodes graph
-		-- _ = trace("orderedEdges = " ++ (show orderedEdges)) True
-		(done, placements) = place initPlacements (generatePoints initPlacements orderedEdges) orderedEdges
-	in if done then Just placements else Nothing
+	in place graph initPlacementss orderedEdges
 
 parseEdge :: String -> Edge
 parseEdge line =
 	let	fields = splitOn "\t" line
 	in Edge (fields!!1) (fields!!2)
 
-unparsePlacements :: Maybe Placements -> String
-unparsePlacements Nothing = "No placements"
--- unparsePlacements (Just placements) = unlines $ map (\(Placement (Point x y) node) -> ("[" ++ node ++ " (" ++ (show x) ++ ", " ++ (show y) ++ ")]")) placements
-unparsePlacements (Just placements) = unlines $ map (\(Placement (Point x y) node) -> (node ++ "\t" ++ (show x) ++ "\t" ++ (show y))) placements
+unparsePlacements :: [Placements] -> String
+unparsePlacements [] = "No placements"
+unparsePlacements ([]:placementss) = unparsePlacements placementss
+unparsePlacements (placements:_) = "nodeName\txPos\tyPos\n" ++ (unlines $ map (\(Placement (Point x y) node) -> (node ++ "\t" ++ (show x) ++ "\t" ++ (show y))) placements)
 
 process :: String -> String
 process lns =

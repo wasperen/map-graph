@@ -1,0 +1,147 @@
+<html>
+    <head>
+        <style type="text/css">
+
+            .links line {
+              stroke: #999;
+              stroke-opacity: 0.6;
+              stroke-width: 15;
+            }
+
+            .nodes rect {
+              stroke: black;
+              stroke-width: 2px;
+            }
+
+            .labels text {
+              pointer-events: none;
+              font: 10px sans-serif;
+            }
+
+    </style>
+    </head>
+    <body>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="d3-ellipse-force.js"></script>
+        <script src="http://underscorejs.org/underscore-min.js"></script>
+        
+<script type="text/javascript">
+
+var w = 4000,
+    h = 1000,
+    border = 5;
+var wBorder = w - border,
+    hBorder = h - border;
+
+var boxWidth = 200,
+    boxHeight = 30,
+    nrH = Math.floor((w - 2 * border) / boxWidth) - 2,
+    nrV = Math.floor((h - 2 * border) / boxHeight) - 2;
+console.log([nrH, nrV]);
+
+var midH = Math.floor(nrH / 2),
+    midV = Math.floor(nrV / 2);
+
+// var nodeColor = d3.scaleOrdinal(d3.schemeCategory20);
+
+var vis = d3.select("body").append("svg")
+    // .attr("xmlns", "http://www.w3.org/2000/svg")
+    // .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
+    .attr("width", w)
+    .attr("height", h);
+
+d3.tsv("map.tsv", function(data) {
+  console.log(data);
+  minX = _.chain(data).map(function(d) { return +d.xPos; }).min().value();
+  maxX = _.chain(data).map(function(d) { return +d.xPos; }).max().value();
+  minY = _.chain(data).map(function(d) { return +d.yPos; }).min().value();
+  maxY = _.chain(data).map(function(d) { return +d.yPos; }).max().value();
+
+  scaleX = d3.scale.linear().domain([minX,maxX]).range([border + boxWidth / 2, w - border - boxWidth / 2]);
+  scaleY = d3.scale.linear().domain([minY,maxY]).range([border + boxHeight / 2, h - border - boxHeight / 2]);
+
+  var node = vis.append('g')
+    .attr("class", "nodes")
+    .selectAll('rect')
+    .data(data, function(n) { return n.nodeName; })
+    .enter().append('rect')
+    // .attr('fill', function(d) { return nodeColor(d.color); })
+    .attr('x', function(d) { return scaleX(d.xPos) - boxWidth / 2; })
+    .attr('y', function(d) { return scaleY(d.yPos) - boxHeight / 2; })
+    .attr('width', function(d) { return boxWidth; })
+    .attr('height', function(d) { return boxHeight; })
+    .attr('rx', "5")
+    .attr('ry', "5");
+  // node.exit().remove();
+
+  var label = vis.append('g')
+    .attr("class", "labels")
+    .selectAll('text')
+    .data(data, function(d) { return d.nodeName; })
+    .enter().append('text')
+    .attr("dy", 2)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d.nodeName; })
+    .attr("fill", "white")
+    .attr("x", function(d) { return scaleX(d.xPos); })
+    .attr("y", function(d) { return scaleY(d.yPos); });
+  // label.exit().remove();
+
+});
+
+
+function cx(index) {
+  return index * boxWidth + border + boxWidth;
+}
+function cy(index) {
+  return index * boxHeight + border + boxHeight;
+}
+
+function updateScreen() {
+  var placedNodes = _.filter(nodes, function(d) { return !_.isUndefined(d.place); });
+  var placedLinks = _.filter(links, function(d) { return !_.isUndefined(d.source.place) && !_.isUndefined(d.target.place); });
+  // console.log('placed ' + placedNodes.length + ' nodes');
+
+  var link = vis.append('g')
+    .attr("class", "links")
+    .selectAll('line')
+    .data(placedLinks, function(l) { return l.id; })
+    .enter().append('line')
+    .style("stroke", function(d) { return nodeColor(d.source.color); })
+    .attr("x1", function(d) { return Math.max(border, Math.min(wBorder, cx(d.source.place[0]))); })
+    .attr("y1", function(d) { return Math.max(border, Math.min(hBorder, cy(d.source.place[1]))); })
+    .attr("x2", function(d) { return Math.max(border, Math.min(wBorder, cx(d.target.place[0]))); })
+    .attr("y2", function(d) { return Math.max(border, Math.min(hBorder, cy(d.target.place[1]))); });
+  link.exit().remove();
+
+  var node = vis.append('g')
+    .attr("class", "nodes")
+    .selectAll('rect')
+    .data(placedNodes, function(n) { return n.id; })
+    .enter().append('rect')
+    .attr('fill', function(d) { return nodeColor(d.color); })
+    .attr('x', function(d) { return cx(d.place[0]) - (boxWidth / 2) + border; })
+    .attr('y', function(d) { return cy(d.place[1]) - (boxHeight / 2) + border; })
+    .attr('width', function(d) { return boxWidth - 2 * border; })
+    .attr('height', function(d) { return boxHeight - 2 * border; })
+    .attr('rx', "5")
+    .attr('ry', "5");
+  node.exit().remove();
+
+  var label = vis.append('g')
+    .attr("class", "labels")
+    .selectAll('text')
+    .data(placedNodes, function(d) { return d.id; })
+    .enter().append('text')
+    .attr("dy", 2)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d.name; })
+    .attr("fill", "white")
+    .attr("x", function(d) { return Math.max(border, Math.min(wBorder, cx(d.place[0]))); })
+    .attr("y", function(d) { return Math.max(border, Math.min(hBorder, cy(d.place[1]))); });
+  label.exit().remove();
+}
+
+</script>
+    </body>
+</html>

@@ -1,0 +1,133 @@
+nodeName	xPos	yPos
+Nifi	-15	-15
+Kafka	-14	-14
+Apache Storm	-13	-13
+Talend	-12	-12
+Informatica ETL	-11	-11
+SAS	0	-17
+perl	0	-16
+pyspark	0	-15
+python	0	-14
+R	-1	-13
+SPSS	-2	-12
+SAS Enterprize Miner	-1	-12
+RapidMiner	-2	-11
+Knime	-1	-11
+Tez	13	-4
+Airflow	12	-4
+Oozie	11	-4
+Node.js	10	-4
+Knox	9	-4
+Mesos	8	-4
+Docker	7	-4
+Cloudera Manager	6	-4
+Ambari	5	-4
+Azure HDInsight	10	-1
+Google Big Query	9	-1
+Amazon Redshift	8	-1
+OS / system setup & maintenance	12	0
+time series platform	11	0
+GPU / High Performance platform	10	0
+in-memory platform	9	0
+RDBMS platform	8	0
+Amazon RDS	7	-1
+big data platform	7	0
+cloud	6	0
+virtualization	5	0
+robotics	11	4
+image and video processing	10	4
+knowledge representation 	9	4
+planning and scheduling	8	4
+rule based decision processing	7	4
+automated reasoning (cognitive computing)	6	4
+speech processing	5	4
+fluid dynamics	-3	-4
+control theory	-3	-3
+cryptography	-2	-2
+statistics	-1	-1
+game theory	0	-1
+probability theory	0	0
+system dynamics	0	1
+agent based simulation	0	2
+discrete event simulation	0	3
+model performance measurement	-10	-2
+reinforcement learning	-9	-1
+similarity computation	-8	0
+correlation & dependency computation	-7	1
+association & item set mining	-6	2
+nearest neighbour	-5	3
+unit testing	-25	-21
+version control	-24	-20
+continuous deployment	-23	-19
+model application	-22	-18
+software design	-21	-17
+model validation	-20	-16
+model performance measurement	-19	-15
+discriminant analysis	-18	-14
+frequency domain analysis	-17	-13
+time series analysis	-16	-12
+support vector machines	-15	-11
+convolutional neural networks (deep learning)	-14	-10
+neural networks	-13	-9
+association rule induction	-12	-8
+tree induction	-11	-7
+Bayesian modelling	-10	-6
+dimensional reduction (pca, svd, etc)	-9	-5
+logistic regression	-8	-4
+linear / polynomial regression	-7	-3
+function fitting	-6	-2
+lazy modelling	-5	-1
+Apache Drill	-2	-10
+Terradata	-3	-9
+SAP HANA	-2	-9
+Impala	-3	-8
+Hadoop Hive	-2	-8
+MySQL	-3	-7
+PostgreSQL	-2	-7
+Oracle	-3	-6
+CouchDB	-4	-7
+Hbase	-5	-8
+Neo4j	-7	-11
+Splunk	-6	-13
+Elasticsearch	-7	-12
+Solr	-8	-11
+Titan	-8	-10
+search optimized	-9	-10
+graph database	-9	-9
+non-structured (media)	-8	-8
+Cassandra	-6	-7
+non-structured (text)	-7	-7
+MongoDB	-5	-6
+key-value based	-6	-6
+MS SQL Server	-4	-5
+document based / NoSQL structure	-5	-5
+R Shiny	-1	-2
+D3.js	0	-2
+Kibana	-1	-3
+Superscript	0	-3
+Tableau	-1	-4
+QlikSense	-1	-5
+Qlikview	-2	-6
+bespoke vizualization	-1	-6
+dashboard implementation	-1	-7
+user experience development	-1	-8
+encryption	0	-13
+hashing	0	-12
+sampling techniques	0	-11
+feature extraction	-1	-10
+report implementation	-1	-9
+normalization	0	-9
+rotation	0	-8
+set operations	0	-7
+aggregation	0	-6
+data cleansing	0	-5
+type conversion	0	-4
+structured / tabular data	-4	-4
+feature weighting & selection	-4	0
+clustering & segmentation	-4	4
+optimization	0	4
+natural language processing	4	4
+solutions architecture	4	0
+Linux	4	-4
+Alteryx	0	-10
+Flume	-10	-10
