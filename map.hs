@@ -35,8 +35,33 @@ neighbours point@(Point xx yy) = map (\(Point dx dy) -> Point (xx + dx) (yy + dy
 isOccupied :: Placements -> Point -> Bool
 isOccupied placements point = any (\(Placement placedPoint _) -> placedPoint == point) placements
 
+data Line = Line Point Point deriving (Show, Eq)
+
+graphLines :: Graph -> Placements -> [Line]
+graphLines [] _ = []
+graphLines edges placements = 
+	let	findFPlacement (Edge (Node fName _) _) = find (\(Placement point (Node name _)) -> name == fName) placements
+		findTPlacement (Edge _ (Node tName _)) = find (\(Placement point (Node name _)) -> name == tName) placements
+	in [Line fPoint tPoint |
+		edge <- edges,
+		let fPlacement = findFPlacement edge, isJust fPlacement, let (Placement tPoint _) = fromJust fPlacement,
+		let tPlacement = findTPlacement edge, isJust tPlacement, let (Placement fPoint _) = fromJust tPlacement]
+
+linesCross :: Line -> Line -> Bool
+linesCross (Line a b) (Line c d) =
+	(ccw a c d) == (ccw b c d) && (ccw a b c) == (ccw a b d)
+	where
+		ccw (Point ax ay) (Point bx by) (Point cx cy) = ((cy - ay) * (bx - ax)) > ((by - ay) * (cx - ax))
+
 isGoodPlacement :: Graph -> Placements -> Placement -> Bool
-isGoodPlacement graph placements (Placement point node) = not $ isOccupied placements point
+isGoodPlacement graph placements (Placement point@(Point x y) node) = 
+	(not $ isOccupied placements point) &&
+	(all (== False) [linesCross a b | a <- existingLines, b <- newLines])
+	where
+		existingLines = graphLines graph placements
+		newLines = [Line point otherPoint |
+			(Placement otherPoint placedNode) <- placements,
+			any (\(Edge fNode tNode) -> fNode == placedNode && tNode == node) graph]
 
 generatePoints :: Placements -> Edge -> Points
 generatePoints [] _ = []
